@@ -1,0 +1,46 @@
+buildscript {
+	repositories {
+		maven {
+			url "https://jcenter.bintray.com"
+		}
+	}
+
+
+	dependencies {
+		classpath 'com.android.tools.build:gradle:2.2.3'
+	}
+}
+
+
+apply plugin: 'com.android.application'
+
+repositories {
+	maven {
+		url "https://jcenter.bintray.com"
+	}
+}
+dependencies {
+	//compile 'com.rmtheis:tess-two:6.1.1'
+		//compile project(':libs/tess-two')
+	compile files('libs/tess-two/bin/tess-two.jar')
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
+	useLibrary  'org.apache.http.legacy'
+	sourceSets {
+		main {
+			res.srcDirs = ['res']
+			manifest.srcFile 'src/main/AndroidManifest.xml'
+			jniLibs.srcDir 'libs/tess-two/libs/'
+		}
+
+//		jniLibs {
+	//		jniLsrcDir 'libs/tess-two/libs/'
+//		}
+
+	}
+}
+
+

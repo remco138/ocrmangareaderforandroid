@@ -1,4 +1,17 @@
-﻿Website:
+A continuation/fork of "Ocr manga reader for android".
+
+Roadmap:
+✓ Don't add a space when exporting to ankidroid, this breaks anki(droid)'s nice furigana feature
+✗ Improve gradle support (doesn't seem to want to build a release apk)
+✗ Decouple edits made to library "tess-two" (with decorator pattern). Would make updating tess-two a breeze
+✗ Pull vocab audio from jpod101 
+   ✗ Also include vocab audio when exporting vocab to an anki card
+✗ Somehow integrate with J-J dictionary Sanseido
+   ✗ Include senseido J definitions when exporting an Ankidroid card (as per anku plugin https://ankiweb.net/shared/info/1967553085)
+✗ Actually put some effort into this readme
+
+Original readme.txt:
+Website:
 http://ocrmangareaderforandroid.sourceforge.net/
 
 --------------------------

@@ -10,6 +10,16 @@ Roadmap:
    ✗ Include senseido J definitions when exporting an Ankidroid card (as per anku plugin https://ankiweb.net/shared/info/1967553085)
 ✗ Actually put some effort into this readme
 
+Setting up a dev environment and running the mangareader:
+1: In Android Studio, open the file build.gradle, it will actually import the project
+2: Android Studio will complain about a missing SDK folder and correct it automatically
+3: get the appropriate SDK for your phone (ctrl-shift-a "android sdk")
+4: Probably need so set up the NDK too. I Will document this if neccesary Soon(tm)
+
+4:
+run ./gradlew assembleRelease -x lintVitalRelease, or hook your phone onto your PC, enable debugging mode, and start instant run in intellij
+
+
 Original readme.txt:
 Website:
 http://ocrmangareaderforandroid.sourceforge.net/

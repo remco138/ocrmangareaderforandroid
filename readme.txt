@@ -2,7 +2,7 @@ A continuation/fork of "Ocr manga reader for android".
 
 Roadmap:
 ✓ Don't add a space when exporting to ankidroid, this breaks anki(droid)'s nice furigana feature
-✗ Improve gradle support (doesn't seem to want to build a release apk)
+✗ Improve gradle support (doesn't seem to want to build a release apk without disabling lintVitalRelease)
 ✗ Decouple edits made to library "tess-two" (with decorator pattern). Would make updating tess-two a breeze
 ✗ Pull vocab audio from jpod101 
    ✗ Also include vocab audio when exporting vocab to an anki card

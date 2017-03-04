@@ -4,6 +4,7 @@ Roadmap:
 ✓ Don't add a space when exporting to ankidroid, this breaks anki(droid)'s nice furigana feature
 ✗ Improve gradle support (doesn't seem to want to build a release apk without disabling lintVitalRelease)
 ✗ Decouple edits made to library "tess-two" (with decorator pattern). Would make updating tess-two a breeze
+✗ Use newer AnkiDroid API if available. Necessary for adding more than 2 fields
 ✗ Pull vocab audio from jpod101 
    ✗ Also include vocab audio when exporting vocab to an anki card
 ✗ Somehow integrate with J-J dictionary Sanseido
@@ -14,7 +15,7 @@ Setting up a dev environment and running the mangareader:
 1: In Android Studio, open the file build.gradle, it will actually import the project
 2: Android Studio will complain about a missing SDK folder and correct it automatically
 3: get the appropriate SDK for your phone (ctrl-shift-a "android sdk")
-4: Probably need so set up the NDK too. I Will document this if neccesary Soon(tm)
+4: Probably need so set up the NDK too. I Will document this if Necessary Soon(tm)
 
 4:
 run ./gradlew assembleRelease -x lintVitalRelease, or hook your phone onto your PC, enable debugging mode, and start instant run in intellij

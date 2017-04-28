@@ -63,8 +63,11 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 
 import com.cb4960.ocrmr.R;
+import com.ichi2.anki.api.AddContentApi;
+
 import net.robotmedia.acv.Constants;
 import net.robotmedia.acv.logic.PreferencesController;
+import net.robotmedia.acv.ui.AnkidroidActivity;
 import net.robotmedia.acv.ui.ComicViewerActivity;
 import net.robotmedia.acv.utils.BoundingTextRect;
 import net.robotmedia.acv.utils.FileUtils;
@@ -74,6 +77,7 @@ import net.robotmedia.acv.utils.LeptUtils;
 import net.robotmedia.acv.utils.MathUtils;
 import net.robotmedia.acv.utils.ShellUtils;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -81,6 +85,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -90,7 +95,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -107,6 +115,8 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static com.ichi2.anki.api.AddContentApi.READ_WRITE_PERMISSION;
 
 /** Container for all OCR related views. */
 public class OcrLayout extends RelativeLayout implements OnGestureListener
@@ -315,10 +325,13 @@ public class OcrLayout extends RelativeLayout implements OnGestureListener
 
   /** Word set to todo words */
   private WordSet wordSetTodo = null;
-  
+
   /** Reference to the comic viewer activity */
   private ComicViewerActivity comicViewerActivity = null;
-  
+
+  /** Reference to the ankidroid send activity */
+  private AnkidroidActivity ankidroidActivity = new AnkidroidActivity();
+
   /** Has the OCR view been started? */
   private boolean ocrStarted = false;
   
@@ -399,7 +412,8 @@ public class OcrLayout extends RelativeLayout implements OnGestureListener
   private boolean ocrSettingsShowFrequency = Constants.DEFAULT_OCR_SETTINGS_SHOW_FREQUENCY;
   private String ocrSettingsWordListSaveFilePath = Constants.DEFAULT_OCR_SETTINGS_WORD_LIST_SAVE_FILE_PATH;
   private String ocrSettingsWordListSaveFileFormat = Constants.DEFAULT_OCR_SETTINGS_WORD_LIST_SAVE_FILE_FORMAT;
-    
+
+  private static final int PERMISSION_CALLBACK_CODE = 0;
  
   public OcrLayout(Context context)
   {
@@ -2464,7 +2478,7 @@ public class OcrLayout extends RelativeLayout implements OnGestureListener
     // Add the options to the list
     optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_clipboard));
     optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_error_correction_editor));
-    
+
     File wordListSaveFile = new File(this.ocrSettingsWordListSaveFilePath);
     
     if((this.ocrSettingsWordListSaveFilePath.length() > 0) 
@@ -2474,27 +2488,11 @@ public class OcrLayout extends RelativeLayout implements OnGestureListener
       optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_word_list_save_file));
     }
     
-    if (IntentUtils.isIntentAvailable(context, "sk.baka.aedict.action.ACTION_SEARCH_EDICT"))
-    {
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_aedict));
-    }
-    
     if (IntentUtils.isIntentAvailable(context, "org.openintents.action.CREATE_FLASHCARD"))
     {
       optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_ankidroid));
     }
-    
-    if (IntentUtils.isIntentAvailable(context, "android.intent.action.VIEW"))
-    {
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_eijiro_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_goo_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_sanseido_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_yahoo_je_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_yahoo_jj_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_google_web));
-      optList.add(this.context.getResources().getString(R.string.ocr_send_dialog_opt_google_images_web));
-    }
-    
+
     return optList;
   }
   
@@ -2723,37 +2721,62 @@ public class OcrLayout extends RelativeLayout implements OnGestureListener
       this.context.startActivity(intent);
     }
   }
-  
-  
+
+  public boolean isApiAvailable(Context context) {
+    return AddContentApi.getAnkiDroidPackageName(context) != null;
+  }
+
+  public void sendToAnkidroidClassic(Entry entry) {
+    if (IntentUtils.isIntentAvailable(context, "org.openintents.action.CREATE_FLASHCARD")) {
+      Intent intent = new Intent("org.openintents.action.CREATE_FLASHCARD");
+
+      // String, language code of the first side
+      intent.putExtra("SOURCE_LANGUAGE", "ja");
+
+      //  String, language code of the second side
+      intent.putExtra("TARGET_LANGUAGE", "en");
+
+      // Text of the first side
+
+      String sourceText = entry.Expression;
+      String reading = entry.Reading;
+
+      if (reading.length() > 0) {
+        sourceText += "[" + reading + "]";
+      }
+
+      intent.putExtra("SOURCE_TEXT", sourceText);
+
+      // Text of the second side
+      intent.putExtra("TARGET_TEXT", entry.Definition);
+
+      this.context.startActivity(intent);
+    }
+  }
+
+  public void sendToAnkidroidModern(Entry entry) {
+    ankidroidActivity.setCardState(entry.Expression, entry.Definition);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M &&
+            ContextCompat.checkSelfPermission(context.getApplicationContext(), READ_WRITE_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
+      ankidroidActivity.setCardState(entry.Expression, entry.Reading);
+      ActivityCompat.requestPermissions(ankidroidActivity, new String[]{READ_WRITE_PERMISSION}, PERMISSION_CALLBACK_CODE);
+      return;
+    }
+    else {
+      //no need to do permisisons
+      ankidroidActivity.addCard();
+    }
+  }
   /** Send the provided entry to AnkiDroid. */
   private void sendToAnkiDroid(Entry entry)
   {
-    if (IntentUtils.isIntentAvailable(context, "org.openintents.action.CREATE_FLASHCARD"))
-    {
-      Intent intent = new Intent("org.openintents.action.CREATE_FLASHCARD");
-      
-      // String, language code of the first side
-      intent.putExtra("SOURCE_LANGUAGE", "ja");
-      
-      //  String, language code of the second side
-      intent.putExtra("TARGET_LANGUAGE", "en");
-      
-      // Text of the first side
-      
-      String sourceText = entry.Expression;
-      String reading = entry.Reading;
-      
-      if(reading.length() > 0)
-      {
-        sourceText += "[" + reading + "]";
-      }
-      
-      intent.putExtra("SOURCE_TEXT", sourceText);
-      
-      // Text of the second side
-      intent.putExtra("TARGET_TEXT", entry.Definition);
-      
-      this.context.startActivity(intent);
+    ankidroidActivity.init(this.context);
+    if(isApiAvailable(this.context)) {
+      sendToAnkidroidModern(entry);
+    }
+    else {
+      // Can't use modern Ankidroid API, use generic intention API
+      sendToAnkidroidClassic(entry);
     }
   }
   

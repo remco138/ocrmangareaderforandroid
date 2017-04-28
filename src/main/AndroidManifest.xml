@@ -32,6 +32,8 @@
         android:smallScreens="true" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.ichi2.anki.permission.READ_WRITE_DATABASE" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.hardware.camera"
                   android:required="false" />
@@ -128,7 +130,7 @@
         <activity android:name="net.robotmedia.acv.ui.settings.mobile.AdvancedSettingsActivity"
             android:label="@string/category_about_title" >
         </activity>
-        
+
         <activity android:name="net.robotmedia.acv.ui.settings.mobile.OcrSettingsActivity"
             android:label="@string/ocr_prefs_title" >
         </activity>

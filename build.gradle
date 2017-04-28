@@ -23,9 +23,12 @@ dependencies {
 	//compile 'com.rmtheis:tess-two:6.1.1'
 		//compile project(':libs/tess-two')
 	compile files('libs/tess-two/bin/tess-two.jar')
+	compile 'com.ichi2.anki:api:1.1.0alpha5'
+	compile 'com.android.support:appcompat-v7:23.2.1'
 }
 
 android {
+	//minSdkVersion 11 //3.0 honeycomb
     compileSdkVersion 25
     buildToolsVersion '25.0.1'
 	useLibrary  'org.apache.http.legacy'
